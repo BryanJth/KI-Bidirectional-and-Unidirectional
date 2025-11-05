@@ -1,0 +1,12 @@
+[package]
+name = "UndirectRust"
+version = "0.2.0"
+edition = "2024"
+
+[dependencies]
+tch = { version = "0.14", features = ["download-libtorch"] }
+csv = "1"
+serde = { version = "1", features = ["derive"] }
+regex = "1"
+anyhow = "1"
+rand = "0.8"

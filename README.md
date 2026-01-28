@@ -109,3 +109,93 @@ KI-Bidirectional-and-Unidirectional/
    ├─ Cargo.lock
    └─ src/main.rs
 ```
+---
+
+## How to Run
+
+### A) Python (PyTorch) — BiLSTM & UniLSTM
+**File:** `Python Bidirectional and Unidirectional/LSTM_KI.ipynb`
+
+1. **Install dependencies**
+   ```bash
+   pip install numpy pandas matplotlib scikit-learn torch torchvision torchaudio
+   ```
+
+2. **Prepare dataset**
+   The notebook contains a splitter that writes:
+   - `train.csv`, `val.csv`, `test.csv`
+
+   Set paths in the notebook (top cells), for example:
+   ```python
+   SINGLE_CSV = "/content/IMDB_Dataset_clean.csv"
+   OUT_DIR    = "/content"
+   ```
+
+   Run the split cell → it creates:
+   - `/content/train.csv`
+   - `/content/val.csv`
+   - `/content/test.csv`
+
+3. **Train & evaluate**
+   The notebook provides separate training sections for:
+   - **BiLSTM**
+   - **UniLSTM**
+
+   Run one or both.
+
+---
+
+### B) Rust (tch-rs / LibTorch) — BiLSTM & UniLSTM
+
+#### Prerequisites
+- Rust toolchain installed (stable)
+- LibTorch downloaded automatically by `tch` (internet required)
+
+1. **Prepare `train.csv`, `val.csv`, `test.csv`**
+   Generate using the Python notebook splitter, or provide your own CSV files with `text,label`.
+
+2. **Update CSV paths in Rust code**
+   Edit the config/path section inside:
+   - `Rust Bidirectional/src/main.rs`
+   - `Rust Undirectional/src/main.rs`
+
+   Example (Windows path):
+   ```rust
+   let cfg = Config {
+       train: r"C:\path\to\train.csv".into(),
+       val:   r"C:\path\to\val.csv".into(),
+       test:  r"C:\path\to\test.csv".into(),
+       // ...
+   };
+   ```
+
+3. **Run (release mode recommended)**
+
+   **BiLSTM (Rust):**
+   ```bash
+   cd "Rust Bidirectional"
+   cargo run --release
+   ```
+
+   **UniLSTM (Rust):**
+   ```bash
+   cd "Rust Undirectional"
+   cargo run --release
+   ```
+
+#### Output
+- Each run prints per-epoch train/val metrics + timing, final test metrics, and total runtime.
+- Model checkpoints are saved under a `checkpoints/` folder (filename depends on the code config).
+
+---
+
+## Notes (Why BiLSTM Might Not Win Here)
+This setup uses **masked average pooling**, which smooths token-position contributions.  
+For **document-level sentiment** like IMDB, UniLSTM often already captures enough signal, while BiLSTM adds compute cost due to two-direction processing.
+
+---
+
+## Limitations
+- Small hyperparameter search (single configuration) — results may change with tuning.
+- CPU-only training makes runtime comparisons hardware-dependent.
+- Using masked average pooling may reduce the advantage of “future context” from BiLSTM for this task.

@@ -90,7 +90,8 @@ Example:
 ```csv
 text,label
 "This movie is great!",positive
-"Worst film ever.",negative
+"Worst film ever.",negative 
+...
 
 ---
 

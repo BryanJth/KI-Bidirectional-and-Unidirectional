@@ -161,7 +161,7 @@ fn make_batches(
     batches
 }
 
-// Model (BIDIRECTIONAL; kalau mau UNI, set bidirectional=false di config & ubah sini)
+// Model BIDIRECTIONAL
 struct BiLstmClf {
     embed: nn::Embedding,
     lstm: nn::LSTM,
@@ -244,7 +244,6 @@ struct Config {
 }
 
 fn main() -> Result<()> {
-    // === EDIT PATHS DI SINI (sesuaikan dengan folder Project kamu) ===
     let cfg = Config {
         train: r"C:\Rust7\Project\train.csv".into(),
         val:   r"C:\Rust7\Project\val.csv".into(),
@@ -261,7 +260,6 @@ fn main() -> Result<()> {
 
     let t_total = Instant::now();
 
-    // ==== LANGSUNG BACA 3 FILE (tanpa single_csv / split) ====
     let train_rows = read_csv_flex(&cfg.train).context("read train.csv")?;
     let val_rows   = read_csv_flex(&cfg.val).context("read val.csv")?;
     let test_rows  = read_csv_flex(&cfg.test).context("read test.csv")?;
@@ -353,7 +351,7 @@ fn main() -> Result<()> {
     Ok(())
 }
 
-// (Opsional) splitter — sekarang tidak dipakai, boleh dibiarkan.
+// Splitter
 fn split_rows(rows: &[Row], train_ratio: f64, val_ratio: f64, seed: u64) -> (Vec<Row>, Vec<Row>, Vec<Row>) {
     let mut idx: Vec<usize> = (0..rows.len()).collect();
     let mut rng = StdRng::seed_from_u64(seed);

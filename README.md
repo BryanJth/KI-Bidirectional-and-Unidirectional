@@ -91,8 +91,7 @@ Example:
 text,label
 "This movie is great!",positive
 "Worst film ever.",negative 
-...
-
+```
 ---
 
 ## Repository Structure
@@ -109,3 +108,4 @@ KI-Bidirectional-and-Unidirectional/
    ├─ Cargo.toml
    ├─ Cargo.lock
    └─ src/main.rs
+```

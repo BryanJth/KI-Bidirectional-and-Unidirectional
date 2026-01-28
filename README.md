@@ -92,3 +92,19 @@ text,label
 "This movie is great!",positive
 "Worst film ever.",negative
 
+---
+
+## Repository Structure
+
+```text
+KI-Bidirectional-and-Unidirectional/
+├─ Python Bidirectional and Unidirectional/
+│  └─ LSTM_KI.ipynb
+├─ Rust Bidirectional/
+│  ├─ Cargo.toml
+│  ├─ Cargo.lock
+│  └─ src/main.rs
+└─ Rust Undirectional/
+   ├─ Cargo.toml
+   ├─ Cargo.lock
+   └─ src/main.rs

@@ -16,7 +16,6 @@ use tch::{
 };
 use tch::nn::RNN; // for .seq()
 
-// -------------------- Data structs --------------------
 #[derive(Deserialize, Debug, Clone)]
 struct Row { text: String, label: String }
 
@@ -82,7 +81,7 @@ fn rows_to_examples(rows: &[Row], vocab: &Vocab, labmap: &BTreeMap<String, i64>,
     }).collect()
 }
 
-// -------------------- CSV helpers --------------------
+// CSV
 fn detect_delimiter<P: AsRef<Path>>(path: P) -> u8 {
     let f = match fs::File::open(path) { Ok(f) => f, Err(_) => return b',' };
     let mut reader = BufReader::new(f);
@@ -129,7 +128,7 @@ fn resolve_text_label_idx(h: &StringRecord) -> (usize, usize) {
     (ti, li)
 }
 
-// -------------------- Batching --------------------
+// Batching
 struct Batch { x: Tensor, lens: Tensor, y: Tensor }
 fn make_batches(
     ex: &[Example], pad_id: i64, batch_size: usize, device: Device, max_len: usize, seed: u64
@@ -158,7 +157,7 @@ fn make_batches(
     batches
 }
 
-// -------------------- Model: UNIdirectional LSTM --------------------
+// Model: UNIdirectional LSTM
 struct UniLstmClf {
     embed: nn::Embedding,
     lstm: nn::LSTM,
@@ -195,7 +194,7 @@ impl UniLstmClf {
     }
 }
 
-// -------------------- Metrics --------------------
+// Metrics
 fn accuracy(logits: &Tensor, y: &Tensor) -> f64 {
     let pred = logits.argmax(-1, false);
     pred.eq_tensor(y).to_kind(Kind::Float).mean(Kind::Float).double_value(&[])
@@ -234,7 +233,7 @@ fn precision_recall_macro(logits: &Tensor, y: &Tensor, num_classes: i64) -> (f64
     (p_macro, r_macro)
 }
 
-// -------------------- Config & main --------------------
+// Config & main
 struct Config {
     train: String, val: String, test: String,
     max_len: usize, batch_size: usize, epochs: usize, lr: f64,
@@ -243,7 +242,6 @@ struct Config {
 }
 
 fn main() -> Result<()> {
-    // === EDIT PATHS DI SINI ===
     let cfg = Config {
         train: r"C:\Rust7\Project\train.csv".into(),
         val:   r"C:\Rust7\Project\val.csv".into(),
@@ -260,7 +258,6 @@ fn main() -> Result<()> {
 
     let t_total = Instant::now();
 
-    // baca 3 file
     let train_rows = read_csv_flex(&cfg.train).context("read train.csv")?;
     let val_rows   = read_csv_flex(&cfg.val).context("read val.csv")?;
     let test_rows  = read_csv_flex(&cfg.test).context("read test.csv")?;
@@ -273,7 +270,6 @@ fn main() -> Result<()> {
     eprintln!("Vocab size: {}", vocab.len());
     eprintln!("Labels: {:?}", labmap);
 
-    // examples
     let train_ex = rows_to_examples(&train_rows, &vocab, &labmap, cfg.max_len);
     let val_ex   = rows_to_examples(&val_rows,  &vocab, &labmap, cfg.max_len);
     let test_ex  = rows_to_examples(&test_rows, &vocab, &labmap, cfg.max_len);
@@ -284,7 +280,7 @@ fn main() -> Result<()> {
     let model = UniLstmClf::new(root, vocab.len(), cfg.emb_dim, cfg.hidden, cfg.num_layers, num_classes, cfg.dropout);
     let mut opt = nn::Adam::default().build(&vs, cfg.lr)?;
 
-    // -------- train loop --------
+    // train loop
     for epoch in 1..=cfg.epochs {
         let t_epoch = Instant::now();
 
@@ -330,7 +326,7 @@ fn main() -> Result<()> {
         );
     }
 
-    // -------- test --------
+    // test
     let t_test = Instant::now();
     let test_batches = make_batches(&test_ex, 0, cfg.batch_size, device, cfg.max_len, cfg.seed);
     let mut t_acc = 0f64; let mut t_f1 = 0f64; let mut t_prec = 0f64; let mut t_rec = 0f64; let mut t_b = 0usize;

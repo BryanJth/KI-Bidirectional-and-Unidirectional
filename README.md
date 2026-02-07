@@ -1,4 +1,4 @@
-# KI — Bidirectional vs Unidirectional LSTM (IMDB Sentiment)
+# KI - Bidirectional vs Unidirectional LSTM (IMDB Sentiment)
 **Exercise 7.4 — Implementing a Bidirectional RNN for Text Classification (Rust + Python)**
 
 This repository implements and compares **Unidirectional LSTM (UniLSTM)** vs **Bidirectional LSTM (BiLSTM)** for **binary text classification (sentiment analysis)** on the **IMDB movie reviews** dataset.  
